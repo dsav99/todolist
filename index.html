@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasks</title>
+    <link rel="stylesheet" href="styles.css">
+
+
+</head>
+
+<body>
+
+    <div id="new-task">
+        <form id="task-form" action="">
+            <label for="">Enter Task name:</label>
+            <input type="text">
+            <br>
+            <br>
+            <label for="">Enter Task description:</label>
+            <br>
+            <br>
+            <textarea name="paragraph_text" cols="15" rows="5"></textarea>
+            <br>
+            <label for="">Select Prority:</label>
+            <input type="range" id="priority" min="0" max="4" step="1">
+            <br>
+            <input type="button" value="Add Task" onclick="addTaskFirebase()">
+
+
+        </form>
+    </div>
+    <nav id="navbar">
+        <div id="logo">
+            TODO LIST
+        </div>
+
+        <div id="actions">
+            <button id="add" onclick="displayDialog()">+</button>
+        </div>
+
+
+    </nav>
+    <div id="tasks">
+
+        <h2>ACTIVE</h2>
+        <div id="active-tasks"></div>
+        <hr>
+        <h2>COMPLETED</h2>
+        <div id="completed-tasks"></div>
+
+
+
+
+        <!-- <div class="task" id="1">
+            <div class="task-details">
+                <div class="task-status" >
+                    
+                </div>
+                <div class="'task-description">
+                    <h3 class="task-name">TEST</h3>
+                    <p class="task-stuff">This is a test </p>
+                </div>
+            </div>
+
+            <div class="task-actions">
+                <button>EDIT</button>
+                <input type="date">
+            </div>
+            
+        </div> -->
+    </div>
+
+
+
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.13.1/firebase-storage.js"></script>
+
+
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCrpZUz37n7Mwl7yEZs3VOJaxpm4Cp0cXA",
+            authDomain: "task-manager-779a6.firebaseapp.com",
+            databaseURL: "https://task-manager-779a6-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "task-manager-779a6",
+            storageBucket: "task-manager-779a6.appspot.com",
+            messagingSenderId: "1071727621905",
+            appId: "1:1071727621905:web:bb39a2feffe44b5629beb0",
+            measurementId: "G-LDZ0SNC42R"
+        };
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+
+    </script>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
