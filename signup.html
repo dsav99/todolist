@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign up Page</title>
-    <!-- <style>
-        @import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-        </style> -->
+
     <link rel="stylesheet" href="signupStyles.css">
 </head>
+
 <body>
     <div id="sign-up">
         <div id="logo">
-            <h1 >TodoList</h1>
+            <h1>TodoList</h1>
             <img src="/check-mark.png" alt="">
         </div>
 
@@ -22,12 +22,50 @@
         </div>
 
         <form action="" id="sign-up-form">
-            <label for="username">Enter username: </label>
-            <br>
-            
-            <input type="text" id="username">
+            <div class="credentials">
+                <label for="username">Enter username:</label>
+                <input type="text" id="username">
+            </div>
+
+            <div id="pass" class="credentials">
+                <label for="password">Enter Password:</label>
+
+
+                <input type="password" id="password">
+            </div>
 
         </form>
+
+        <input id='loginButton' type="button" value=" L O G I N" onclick="login()">
+        <br>
+        <input id='signupButton' type="button" value=" S I G N   U P" onclick="signup()">
+
     </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.13.1/firebase-storage.js"></script>
+
+
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCrpZUz37n7Mwl7yEZs3VOJaxpm4Cp0cXA",
+            authDomain: "task-manager-779a6.firebaseapp.com",
+            databaseURL: "https://task-manager-779a6-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "task-manager-779a6",
+            storageBucket: "task-manager-779a6.appspot.com",
+            messagingSenderId: "1071727621905",
+            appId: "1:1071727621905:web:bb39a2feffe44b5629beb0",
+            measurementId: "G-LDZ0SNC42R"
+        };
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+
+    </script>
+    <script src="script2.js"></script>
 </body>
+
 </html>

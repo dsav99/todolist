@@ -27,40 +27,52 @@
             <label for="">Select Prority:</label>
             <input type="range" id="priority" min="0" max="4" step="1">
             <br>
+            <label for="">Select a Due Date:</label>
+            <input type="date" id="due-date">
+            <br>
+            <br>
             <input type="button" value="Add Task" onclick="addTaskFirebase()">
+            <input type="button" value="Cancel" onclick="cancel()" >
 
 
         </form>
     </div>
     <nav id="navbar">
         <div id="logo">
-            TODO LIST
+            <img src="/check-mark.png" alt="">
+            <h1 >TodoList</h1>
+            
         </div>
 
         <div id="actions">
-            <button id="add" onclick="displayDialog()">+</button>
+            <button id="add" onclick="displayDialog()">Add</button>
+            <!-- <button id="edit" onclick="editTask()">Edit</button>
+            <button id="delete" onclick="displayDialog()">Delete</button> -->
         </div>
 
 
     </nav>
     <div id="tasks">
 
-        <h2>ACTIVE</h2>
+        <h2 id="active-heading">Active Tasks</h2>
         <div id="active-tasks"></div>
         <hr>
-        <h2>COMPLETED</h2>
+        <h2 id="completed-heading">Completed Tasks</h2>
         <div id="completed-tasks"></div>
 
 
 
 
-        <!-- <div class="task" id="1">
+        <!-- <div class="task" id="1" ondblclick="editTask()">
             <div class="task-details">
                 <div class="task-status" >
                     
                 </div>
+
+                
                 <div class="'task-description">
                     <h3 class="task-name">TEST</h3>
+                    <input type="text">
                     <p class="task-stuff">This is a test </p>
                 </div>
             </div>

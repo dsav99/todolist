@@ -1,36 +1,109 @@
+const params = new URLSearchParams(window.location.search);
+const userId = params.get('username');
+const dbRef = firebase.database().ref();
+var t=[];
+
 (function (){
-  var tasks=[];
+  var tasks;
 
-  if(localStorage.tasks)
-    tasks = JSON.parse(localStorage.tasks);
+  const dbRef = firebase.database().ref();
 
-    for(var i=0;i<tasks.length;i++){
-      displayTask(tasks[i]);
+  if(dbRef.child('users').child(userId).get().then((snapshot)=>{
+    if(snapshot.exists()){
+
+      // var pass = prompt("Enter password:");
+      // if(pass!==snapshot.val().password){
+      //   alert("Invalid password");
+      //   return;
+      // }
+
       
+      dbRef.child("tasks").child(userId).get().then((snapshot)=>{
+        return snapshot;
+      }).then((snapshot)=>{
+       
+        
+        document.body.style.display='block';
+        tasks=snapshot.val();
+         const myTasks=sortByDates(tasks);
+
+        //  console.log(myTasks);
+         console.log(tasks);
+         
+
+         
+        for(var i=0;i<myTasks.length;i++){
+
+          displayTask(myTasks[i],myTasks[i].id);
+
+        }
       
+      })
     }
+    else{
+      alert("There is no registered account with this username. You need to Sign Up first!")
+    }
+  }));
+
 })();
 
 
+function cancel(){
+  document.getElementById("new-task").style.display = 'none';
+
+}
+
+
+function sortByDates(tasks){
+  
+
+ var array = [];
+ for(let x in tasks){
+   array.push(tasks[x]);
+ }
+
+ for(var i=0;i<array.length;i++){
+   for(var j=0;j<array.length;j++){
+     if(array[i].dueDate<array[j].dueDate){
+       var temp = array[i];
+       array[i]=array[j];
+       array[j]=temp;
+     }
+   }
+ }
+
+ return array;
+  
+}
+
+function compare(a,b){
+  if(a.dueDate < b.dueDate){
+    return -1;
+  }
+  if(a.dueDate > b.dueDate){
+    return 1;
+  }
+  return 0;
+}
 
 
 
 
-function displayTask(task){
+
+function displayTask(task,key){
+
+ var taskName = task.taskName;
+ var taskDes = task.taskDescription;
+ var priority =  task.priority;
+ var dueDate = task.dueDate;
+ var lastModified = task.lastModified;
+ var active = task.taskStatus;
+ var completeDate = task.completedOn;
+ 
 
 
-  var t = JSON.parse(localStorage.getItem(task));
-
-  console.log(t);
-
- const taskName = t.name;
- const taskDes = t.description;
- const priority =  t.priority;
-
- console.log("Priority of task: "+priority);
-
-
- const tasks = document.getElementById("active-tasks");
+ const activeTasks = document.getElementById("active-tasks");
+ const completedTasks = document.getElementById("completed-tasks");
 
   const newTask = document.createElement("div");
 
@@ -57,50 +130,124 @@ function displayTask(task){
   heading.classList.add("task-name");
   heading.innerHTML = taskName;
 
+  const nameInput = document.createElement('input');
+  nameInput.style.display='none';
+  nameInput.value=heading.innerHTML;
+
+  const descriptionInput = document.createElement('input');
+  descriptionInput.style.display='none';
+  
+
   const stuff = document.createElement("p");
   stuff.classList.add("task-stuff");
   stuff.innerHTML = taskDes;
+  descriptionInput.value = stuff.innerHTML;
+
+  const okButton = document.createElement('button');
+  okButton.innerHTML="OK";
+  okButton.style.display='none';
+  okButton.addEventListener('click',function(){
+
+
+    this.parentElement.childNodes[0].innerHTML=this.parentElement.childNodes[1].value;
+    // this.parentElement.childNodes[1].style.display='none'
+    this.parentElement.childNodes[2].innerHTML=this.parentElement.childNodes[3].value;
+    // this.parentElement.childNodes[3].style.display='block';
+    this.parentElement.childNodes[4].style.display='none';
+    
+    this.parentElement.childNodes[1].style.display='none'
+    this.parentElement.childNodes[3].style.display='none'
+    this.parentElement.childNodes[2].style.display='block';
+    this.parentElement.childNodes[0].style.display='block';
+    this.parentElement.childNodes[4].style.display='none';
+
+  
+    
+
+  })
+  
 
   taskDescription.append(heading);
+  taskDescription.append(nameInput);
   taskDescription.append(stuff);
+  taskDescription.append(descriptionInput);
+  taskDescription.append(okButton);
+  
 
   //  END TASK DESCRIPTION.
   taskDetails.append(taskStatus);
   taskDetails.append(taskDescription);
 
 
+  const taskDeadlines = document.createElement('div');
+  taskDeadlines.classList.add('task-deadlines');
+  const due = document.createElement('p');
+  due.innerHTML="Due on : "+dueDate;
+  const modified = document.createElement('p');
+  modified.innerHTML = "Last modified on: "+lastModified;
+  
+  
 
 
+  taskDeadlines.append(due);
+  taskDeadlines.append(modified);
 
   newTask.append(taskDetails);
+  newTask.append(taskDeadlines);
 
 
+  if(active){
+    // newTask.classList.remove('completed');
+    activeTasks.append(newTask);
 
-  tasks.append(newTask);
+  }
+  else{
+    newTask.classList.add('completed');
+    due.innerHTML = "Completed on: "+completeDate;
+    completedTasks.append(newTask);
+  }
 
 
-  taskStatus.addEventListener("click", function () {
-    this.classList.toggle('checked');
+  newTask.addEventListener('click',function(){
+    dbRef.child("tasks").child(userId).child(key).get().then((snapshot)=>{
+      if(snapshot.val().taskStatus===true){
+        const currentDate = new Date();
+        var time = currentDate.getMonth()+"-"+currentDate.getDate()+" at "+currentDate.getHours()+":"+currentDate.getMinutes()+":"+currentDate.getSeconds();
+    
+        dbRef.child("tasks").child(userId).child(key).update({
+          taskStatus:false,
+          completedOn:time,
+        });
+      }
+      else{
+        dbRef.child("tasks").child(userId).child(key).update({taskStatus:true});
+  
+      }
 
-    if (this.classList.contains('checked')) {
-      heading.classList.add("completed");
-      stuff.classList.add('completed');
-      // console.log("HERE: "+this.parentElement.parentElement.getAttribute('id'));
-      moveToCompleted(this.parentElement.parentElement);
-
-    }
-    else {
-      heading.classList.remove("completed");
-      stuff.classList.remove('completed');
-      moveToActive(this.parentElement.parentElement);
-
-     
-    }
+      location.reload();
+    })
   });
 
+}
 
- 
 
+function myFunction(key){
+  console.log("my function called");
+  console.log(key);
+  dbRef.child("tasks").child(userId).child(key).get().then((snapshot)=>{
+    if(snapshot.val().taskStatus===true){
+      
+      dbRef.child("tasks").child(userId).child(key).update({taskStatus:false});
+    }
+    else{
+      dbRef.child("tasks").child(userId).child(key).update({taskStatus:true});
+
+    }
+  })
+}
+
+function submitChanges(){
+  console.log("function called");
 }
 
 function moveToActive(task){
@@ -114,132 +261,6 @@ function moveToCompleted(task){
 }
 
 
-function addTask() {
-
-  const form = document.getElementById("task-form");
-  
-
-  const taskName = form.elements[0].value;
-  const taskDes = form.elements[1].value;
-  const priority = form.elements[2].value;
-
-
-
-  if(taskName==="" || taskDes===""){
-    alert("Please fill in the required fields");
-    return;
-  } 
-
-  console.log(taskName);
-  console.log(taskDes);
-
-  const tasks = document.getElementById("active-tasks");
-
-  const newTask = document.createElement("div");
-
-
-  if(priority>2){
-    newTask.style.backgroundColor='red';
-  }
-
-
-  newTask.classList.add("task");
-
-
-  const taskDetails = document.createElement("div");
-  taskDetails.classList.add("task-details");
-
-
-  //  START TASK STATUS
-  const taskStatus = document.createElement("div");
-  taskStatus.classList.add("task-status");
-
-
-  //START TASK DESCRIPTION
-  const taskDescription = document.createElement("div");
-  taskDescription.classList.add("task-description");
-
-  const heading = document.createElement("h3");
-  heading.classList.add("task-name");
-  heading.innerHTML = taskName;
-
-  const stuff = document.createElement("p");
-  stuff.classList.add("task-stuff");
-  stuff.innerHTML = taskDes;
-
-  taskDescription.append(heading);
-  taskDescription.append(stuff);
-
-  //  END TASK DESCRIPTION.
-  taskDetails.append(taskStatus);
-  taskDetails.append(taskDescription);
-
-
-
-
-
-  newTask.append(taskDetails);
-
-
-
-  tasks.append(newTask);
-  document.getElementById("new-task").style.display = 'none';
-
-
-
-  taskStatus.addEventListener("click", function () {
-    this.classList.toggle('checked');
-
-    if (this.classList.contains('checked')) {
-      heading.classList.add("completed");
-      stuff.classList.add('completed');
-      moveToCompleted(this.parentElement.parentElement);
-
-    }
-    else {
-      heading.classList.remove("completed");
-      stuff.classList.remove('completed');
-      moveToActive(this.parentElement.parentElement);
-
-    }
-  });
-
-
-  var currentTask = {
-    name: taskName,
-    description: taskDes,
-    priority:priority,
-    id:id
-  }
-
-
-  if (localStorage.tasks) {
-    var taskArray = JSON.parse(localStorage.tasks);
-    var currentTaskNumber =  taskArray.length;
-    currentTask.id=currentTaskNumber+1;
-    // console.log("Current task number :"+(currentTaskNumber));
-    taskArray.push("task-"+(taskArray.length+1));
-    localStorage.setItem("task-"+(taskArray.length),JSON.stringify(currentTask));
-    localStorage.tasks = JSON.stringify(taskArray);
-    newTask.setAttribute('id',"task-"+(taskArray.length));
-  }
-  else {
-    localStorage.tasks = JSON.stringify([]);
-    // console.log("Current task number :"+1);
-    currentTask.id=1;
-    var taskArray = JSON.parse(localStorage.tasks);
-    newTask.setAttribute('id',"task-1");
-    localStorage.setItem("task-1",JSON.stringify(currentTask));
-    taskArray.push("task-1");
-    localStorage.tasks = JSON.stringify(taskArray);
-  }
-
-  
-
-}
-
-
-
 
 function addTaskFirebase(){
 
@@ -247,27 +268,93 @@ function addTaskFirebase(){
 
   const form = document.getElementById("task-form");
   
-  console.log("DD");
+  
 
   const taskName = form.elements[0].value;
   const taskDes = form.elements[1].value;
   const priority = form.elements[2].value;
+  const dueDate = form.elements[3].value;
+  const currentDate = new Date();
+  const lastModified = currentDate.getMonth()+"-"+currentDate.getDate()+" at "+currentDate.getHours()+":"+currentDate.getMinutes()+":"+currentDate.getSeconds();
 
-  dbRef.child('tasks').push({
-    taskName: taskName,
-    taskDescription:taskDes,
-    userName:"savi",
-  });
+  dbRef.child("users").child(userId).get().then((snapshot)=>{
+    if(snapshot.exists()){
+
+      console.log("H");
+      dbRef.child("tasks").child(userId).get().then((snap)=>{
+        if(snap.exists()){
+          return Object.keys(snap.val()).length;
+        }
+        else{
+          return 0;
+        }
+        
+      }).then((id)=>{
+        dbRef.child("tasks").child(userId).child(id).set({
+        taskName: taskName,
+        taskDescription:taskDes,
+        priority:priority,
+        dueDate:dueDate,
+        lastModified:lastModified,
+        taskStatus:true,
+        completedOn:"",
+        id:id,
+      });
+      })
+
+      
+
+      // setTimeout(function(){console.log("H");},1000);
+      // dbRef.child("tasks").child(userId).push({
+      //   taskName: taskName,
+      //   taskDescription:taskDes,
+      //   priority:priority,
+      //   dueDate:dueDate,
+      //   lastModified:lastModified,
+      //   taskStatus:true,
+      //   completedOn:"",
+      // });
+    }
+    else{
+      console.log("NO USER FOUND");
+    }
+  }).then(()=>{
+    
+    // location.reload();
+  })
+
+
+  document.getElementById("new-task").style.display = 'none';
+
 
 }
-
-
-
-
-
 
 function displayDialog() {
   document.getElementById("new-task").style.display = 'block';
 }
 
 
+// taskStatus.addEventListener("click", function () {
+//   // dbRef.child("tasks").child(userId).child(key).get().then((snapshot)=>{
+//   //   if(snapshot.exists()){
+//   //     var s = snapshot.val().taskStatus;
+//   //     console.log(s);
+
+//   //     if(s){
+//   //       const currentDate = new Date();
+//   //       var time = currentDate.getMonth()+"-"+currentDate.getDate()+" at "+currentDate.getHours()+":"+currentDate.getMinutes()+":"+currentDate.getSeconds();
+//   //       dbRef.child("tasks").child(userId).child(key).update({
+//   //         taskStatus:false,
+//   //         completedOn:time,
+//   //       });
+//   //     }
+//   //     else{
+//   //       dbRef.child("tasks").child(userId).child(key).update({
+//   //         taskStatus:true,
+//   //         completedOn:"",
+//   //       });
+//   //     }
+      
+//   //   }
+//   // })
+// });
