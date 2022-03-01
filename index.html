@@ -46,6 +46,7 @@
 
         <div id="actions">
             <button id="add" onclick="displayDialog()">Add</button>
+            
             <!-- <button id="edit" onclick="editTask()">Edit</button>
             <button id="delete" onclick="displayDialog()">Delete</button> -->
         </div>
@@ -55,7 +56,18 @@
     <div id="tasks">
 
         <h2 id="active-heading">Active Tasks</h2>
+        <form action="" id="filter">
+            <label for=""> Filter By</label>
+            <select name="" id="">
+                <option id="filter0" value="0">Order Added</option>
+                <option id="filter1" value="1">Due Date</option>
+                <option id="filter1" value="2">Name</option>
+                <option id="filter2" value="3">Priority</option>
+            </select>
+            <input type="button" value="Go" id="go"></button>
+        </form>
         <div id="active-tasks"></div>
+       
         <hr>
         <h2 id="completed-heading">Completed Tasks</h2>
         <div id="completed-tasks"></div>

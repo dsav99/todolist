@@ -137,6 +137,17 @@ textarea{
     letter-spacing: 2px;
     font-size: 30px;
     
+
+
+}
+
+
+#filter select option{
+    background-color: black;
+}
+
+#filter1{
+    background-color: red;
 }
 
 #tasks{

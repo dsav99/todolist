@@ -6,6 +6,10 @@ var t=[];
 (function (){
   var tasks;
 
+  const filter=document.getElementById("filter").elements[0].value;
+  
+
+
   const dbRef = firebase.database().ref();
 
   if(dbRef.child('users').child(userId).get().then((snapshot)=>{
@@ -25,19 +29,53 @@ var t=[];
         
         document.body.style.display='block';
         tasks=snapshot.val();
-         const myTasks=sortByDates(tasks);
+        console.log(tasks);
 
-        //  console.log(myTasks);
-         console.log(tasks);
-         
-
-         
-        for(var i=0;i<myTasks.length;i++){
-
-          displayTask(myTasks[i],myTasks[i].id);
-
+        for(let x in tasks){
+          displayTask(tasks[x],tasks[x].id);
         }
-      
+
+        const goButton = document.getElementById("go");
+
+        goButton.addEventListener('click',function(){
+          // location.reload();
+          const filter=document.getElementById("filter").elements[0].value;
+          console.log(filter);
+        
+          if(filter==='0'){
+            clearTasks();
+            
+          }
+          else if(filter==='1'){
+            clearTasks();
+            const myTasks=sortByDates(tasks);
+            for(var i=0;i<myTasks.length;i++){
+  
+              displayTask(myTasks[i],myTasks[i].id);
+    
+            }
+          }
+  
+          else if(filter==='2'){
+            clearTasks();
+            const myTasks = sortByName(tasks);
+            for(var i=0;i<myTasks.length;i++){
+  
+              displayTask(myTasks[i],myTasks[i].id);
+    
+            }
+          }
+
+          else if(filter==='3'){
+            clearTasks();
+            const myTasks = sortByPriority(tasks);
+            for(var i=0;i<myTasks.length;i++){
+  
+              displayTask(myTasks[i],myTasks[i].id);
+    
+            }
+          }
+        });
       })
     }
     else{
@@ -53,6 +91,10 @@ function cancel(){
 
 }
 
+
+function clearTasks(){
+  document.getElementById("active-tasks").innerHTML="";
+}
 
 function sortByDates(tasks){
   
@@ -74,6 +116,47 @@ function sortByDates(tasks){
 
  return array;
   
+}
+
+
+function sortByName(tasks){
+  var array = [];
+ for(let x in tasks){
+   array.push(tasks[x]);
+ }
+
+ for(var i=0;i<array.length;i++){
+   for(var j=0;j<array.length;j++){
+     if(array[i].taskName<array[j].taskName){
+       var temp = array[i];
+       array[i]=array[j];
+       array[j]=temp;
+     }
+   }
+ }
+
+ return array;
+
+}
+
+function sortByPriority(tasks){
+  var array = [];
+ for(let x in tasks){
+   array.push(tasks[x]);
+ }
+
+ for(var i=0;i<array.length;i++){
+   for(var j=0;j<array.length;j++){
+     if(array[i].priority<array[j].priority){
+       var temp = array[i];
+       array[i]=array[j];
+       array[j]=temp;
+     }
+   }
+ }
+
+ return array;
+
 }
 
 function compare(a,b){
